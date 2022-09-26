@@ -6,15 +6,29 @@ const {shuffleArray} = require('./utils')
 
 app.use(express.json())
 
+var Rollbar = require('rollbar')
+var rollbar = new Rollbar({
+  accessToken: '540ed16556194488a590e34a835a3dea',
+  captureUncaught: true,
+  captureUnhandledRejections: true,
+})
+
+rollbar.log('Hello world!')
+
+
+
 app.get('/' , (req, res)=> {
+rollbar.log('page has been successfully loaded')
  res.sendFile(path.join(__dirname, '/public/index.html'))
 })
 
 app.get('/styles' , (req, res)=> {
+    rollbar.log('CSS is showing up in browser')
     res.sendFile(path.join(__dirname, '/public/index.css'))
    })
 
 app.get('/js' , (req, res)=> {
+    rollbar.log('JS is functioning in browser')
     res.sendFile(path.join(__dirname, '/public/index.js'))
    })
 
@@ -22,6 +36,7 @@ app.get('/api/robots', (req, res) => {
     try {
         res.status(200).send(botsArr)
     } catch (error) {
+        rollbar.error('no bots loading')
         console.log('ERROR GETTING BOTS', error)
         res.sendStatus(400)
     }
